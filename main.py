@@ -21,7 +21,7 @@ def sampling(input_list, labels, batchsize):
 
 
 
-def train(model, optimizer, input_list, labels, valid_input, valid_labels, epoch=20, batchsize=128):
+def train(model, optimizer, input_list, labels, valid_input, valid_labels, epoch=20, batchsize=16):
 
     for _ in range(epoch):
         Loss = 0
@@ -32,7 +32,11 @@ def train(model, optimizer, input_list, labels, valid_input, valid_labels, epoch
             loss.backward()
             optimizer.step()
             X, y = sampling(valid_input, valid_labels, batchsize)
+            model.eval()
             loss = model.get_loss(X, y)
+            p = model(X, y)
+            # print(np.mean((np.argmax(p.data.numpy(),axis=1) - y.data.numpy()) == 0))
+            model.train()
 
             Loss += loss.data.cpu().numpy()
 
